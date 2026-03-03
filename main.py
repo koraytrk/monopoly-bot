@@ -22,7 +22,7 @@ def monopoly_kontrol_et():
     with sync_playwright() as p:
         # headless=False: Tarayıcı penceresini görünür yapar
         # slow_mo=500: İşlemleri izleyebilmen için biraz yavaşlatır
-        browser = p.chromium.launch(headless=False) 
+        browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
         
         context = browser.new_context(
             viewport={'width': 1280, 'height': 720},
@@ -68,4 +68,3 @@ if __name__ == "__main__":
         monopoly_kontrol_et()
         print("😴 1 dakika bekleniyor...")
         time.sleep(60)
-        
