@@ -22,7 +22,11 @@ def monopoly_kontrol_et():
     with sync_playwright() as p:
         # headless=False: Tarayıcı penceresini görünür yapar
         # slow_mo=500: İşlemleri izleyebilmen için biraz yavaşlatır
-        browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
+        browser = p.chromium.launch(
+    headless=True, 
+    args=["--no-sandbox", "--disable-setuid-sandbox"],
+    executable_path="/opt/render/.cache/ms-playwright/chromium-1105/chrome-linux/chrome"
+)
         
         context = browser.new_context(
             viewport={'width': 1280, 'height': 720},
