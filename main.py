@@ -1,14 +1,13 @@
-import os
 import asyncio
-import subprocess
 from playwright.async_api import async_playwright
 
 async def run_bot():
     async with async_playwright() as p:
-        print("Sistem başlatılıyor, Koray...")
+        print("Sistem başlatılıyor, Koray. Hazır mısın?")
         
         try:
-            # Render'ın tarayıcıyı nereye kurduğunu otomatik tespit eder
+            # ÖNEMLİ: Kendi indirdiğimiz tarayıcıyı değil, 
+            # Render sisteminde varsayılan olarak bulunanı arar.
             browser = await p.chromium.launch(
                 headless=True,
                 args=[
@@ -24,17 +23,13 @@ async def run_bot():
             
             title = await page.title()
             print(f"BAŞARILI! Sayfa Başlığı: {title}")
-            print("Bot şu an aktif!")
+            print("Bot şu an bulutta aktif.")
 
-            # Botun kapanmaması için döngü
             while True:
                 await asyncio.sleep(3600)
                 
         except Exception as e:
-            print(f"Hata oluştu: {e}")
-            # Eğer yine bulamazsa, sistemdeki yerini zorla bulmaya çalış:
-            print("Tarayıcı aranıyor...")
-            subprocess.run(["python", "-m", "playwright", "install", "chromium"])
+            print(f"Hata detayı: {e}")
 
 if __name__ == "__main__":
     asyncio.run(run_bot())
