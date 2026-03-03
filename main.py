@@ -1,51 +1,40 @@
 import os
 import asyncio
+import subprocess
 from playwright.async_api import async_playwright
 
 async def run_bot():
-    # Render'ın tarayıcıyı kurduğu gizli yolu koda gösteriyoruz
-    # Hata mesajında çıkan 'chromium-1105' yolunu baz aldık
-    chrome_path = "/opt/render/.cache/ms-playwright/chromium-1105/chrome-linux/chrome"
-
     async with async_playwright() as p:
-        print("Sistem başlatılıyor, Koray. Tarayıcı kontrol ediliyor...")
+        print("Sistem başlatılıyor, Koray...")
         
         try:
-            # Tarayıcıyı Render'ın izin verdiği özel ayarlarla açıyoruz
+            # Render'ın tarayıcıyı nereye kurduğunu otomatik tespit eder
             browser = await p.chromium.launch(
                 headless=True,
-                executable_path=chrome_path,
                 args=[
                     "--no-sandbox", 
                     "--disable-setuid-sandbox", 
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu"
+                    "--disable-dev-shm-usage"
                 ]
             )
             
-            context = await browser.new_context()
-            page = await context.new_page()
-            
-            # TEST: Google'a gidip bağlantıyı kontrol edelim
+            page = await browser.new_page()
             print("Siteye giriş yapılıyor...")
-            await page.goto("https://www.google.com", timeout=60000)
+            await page.goto("https://www.google.com")
             
             title = await page.title()
-            print(f"Bağlantı Başarılı! Sayfa Başlığı: {title}")
-            print("Bot şu an bulutta aktif olarak çalışıyor.")
+            print(f"BAŞARILI! Sayfa Başlığı: {title}")
+            print("Bot şu an aktif!")
 
-            # --- KENDİ BOT MANTIKLARINI (TELEGRAM VS.) BURAYA EKLEYEBİLİRSİN ---
-            
-            # Botun hemen kapanmaması için bekletiyoruz
-            await asyncio.sleep(300) 
-            
-            await browser.close()
-            
+            # Botun kapanmaması için döngü
+            while True:
+                await asyncio.sleep(3600)
+                
         except Exception as e:
-            print(f"Bir hata oluştu Koray: {e}")
-            print("Eğer 'executable doesn't exist' diyorsa Render panelinden 'Clear Build Cache' yapmalısın.")
+            print(f"Hata oluştu: {e}")
+            # Eğer yine bulamazsa, sistemdeki yerini zorla bulmaya çalış:
+            print("Tarayıcı aranıyor...")
+            subprocess.run(["python", "-m", "playwright", "install", "chromium"])
 
 if __name__ == "__main__":
-    # Render'daki asenkron yapıyı başlatır
     asyncio.run(run_bot())
-    
